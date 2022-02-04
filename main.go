@@ -40,7 +40,6 @@ func main() {
 	}
 	app.clientID = os.Getenv("CLIENT_ID")
 	app.clientSecret = os.Getenv("CLIENT_SECRET")
-	app.accessToken = "5kuyhvva1rwsi0xv4gwpeeen0ff6iv"
 
 	port := os.Getenv("PORT")
 	host := func(port string) string {
@@ -63,7 +62,7 @@ func main() {
 		})
 	})
 	app.Register()
-	// app.createAccessToken()
+	app.createAccessToken()
 
 	go func() {
 		for {
