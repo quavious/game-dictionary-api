@@ -56,16 +56,10 @@ func (app *App) Register() {
 		rw.Write(msg)
 	})
 	app.mux.Get("/games/genre/{genre}/{page}/{option}", func(rw http.ResponseWriter, r *http.Request) {
-		_genre := chi.URLParam(r, "genre")
+		genre := chi.URLParam(r, "genre")
 		_page := chi.URLParam(r, "page")
 
 		option := chi.URLParam(r, "option")
-		genre, err := strconv.Atoi(_genre)
-		if err != nil {
-			rw.WriteHeader(http.StatusBadRequest)
-			http.NotFound(rw, r)
-			return
-		}
 		page, err := strconv.Atoi(_page)
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)
@@ -77,16 +71,10 @@ func (app *App) Register() {
 	})
 
 	app.mux.Get("/games/theme/{theme}/{page}/{option}", func(rw http.ResponseWriter, r *http.Request) {
-		_theme := chi.URLParam(r, "theme")
+		theme := chi.URLParam(r, "theme")
 		_page := chi.URLParam(r, "page")
 
 		option := chi.URLParam(r, "option")
-		theme, err := strconv.Atoi(_theme)
-		if err != nil {
-			rw.WriteHeader(http.StatusBadRequest)
-			http.NotFound(rw, r)
-			return
-		}
 		page, err := strconv.Atoi(_page)
 		if err != nil {
 			rw.WriteHeader(http.StatusBadRequest)

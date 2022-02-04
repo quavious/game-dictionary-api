@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"nwlee.app/go/go-igdb-api/model/model"
 	"nwlee.app/go/go-igdb-api/model/response"
@@ -59,7 +60,7 @@ func stringify(response []response.GameItemResponse) []model.GameListModel {
 }
 
 func (app *App) GetGameByID(id int, rw *http.ResponseWriter) []byte {
-	buf := bytes.NewBuffer([]byte(fmt.Sprintf("fields artworks.image_id,cover.image_id,id,name,genres.name,genres.id,created_at,updated_at,platforms.name,platforms.platform_logo.image_id,rating,rating_count,summary,storyline,total_rating,total_rating_count,themes.id,themes.name,url,videos.name,videos.video_id,websites.category,websites.url; where id = %d;", id)))
+	buf := bytes.NewBuffer([]byte(fmt.Sprintf("fields artworks.image_id,cover.image_id,id,name,genres.slug,genres.id,created_at,updated_at,platforms.name,platforms.platform_logo.image_id,rating,rating_count,summary,storyline,total_rating,total_rating_count,themes.id,themes.slug,url,videos.name,videos.video_id,websites.category,websites.url; where id = %d;", id)))
 	req, err := http.NewRequest("POST", "https://api.igdb.com/v4/games", buf)
 	if err != nil {
 		app.LogError(err)
@@ -160,7 +161,7 @@ func (app *App) GetGameList(page int, option string, rw *http.ResponseWriter) []
 func (app *App) GetGameSearchList(page int, term string, rw *http.ResponseWriter) []byte {
 	(*rw).Header().Set("Content-Type", "application/json")
 	buf := bytes.NewReader([]byte(fmt.Sprintf(`
-		fields game.cover.image_id,game.id,game.name,game.genres.name,game.genres.id,game.created_at,game.updated_at,game.platforms.name,game.platforms.platform_logo.image_id,game.rating,game.rating_count,game.total_rating,game.total_rating_count,game.themes.id,game.themes.name; 
+		fields game.cover.image_id,game.id,game.name,game.genres.slug,game.genres.id,game.created_at,game.updated_at,game.platforms.name,game.platforms.platform_logo.image_id,game.rating,game.rating_count,game.total_rating,game.total_rating_count,game.themes.id,game.themes.slug; 
 		search "%s"; 
 		limit %d; 
 		offset %d;
@@ -220,10 +221,11 @@ func (app *App) GetGameSearchList(page int, term string, rw *http.ResponseWriter
 	return nil
 }
 
-func (app *App) GetGameGenreList(genre int, page int, option string, rw *http.ResponseWriter) []byte {
+func (app *App) GetGameGenreList(genre string, page int, option string, rw *http.ResponseWriter) []byte {
 	(*rw).Header().Set("Content-Type", "application/json")
+	genre = url.PathEscape(genre)
 	option = toSortOption(option)
-	buf := bytes.NewBuffer([]byte(fmt.Sprintf(`%s limit %d; offset %d; %s & genres = [%d];`, dataRequired, size, size*(page-1), option, genre)))
+	buf := bytes.NewBuffer([]byte(fmt.Sprintf(`%s limit %d; offset %d; %s & genres.slug = "%s";`, dataRequired, size, size*(page-1), option, genre)))
 	req, err := http.NewRequest("POST", "https://api.igdb.com/v4/games", buf)
 	if err != nil {
 		app.LogError(err)
@@ -246,10 +248,11 @@ func (app *App) GetGameGenreList(genre int, page int, option string, rw *http.Re
 	return msg
 }
 
-func (app *App) GetGameThemeList(theme int, page int, option string, rw *http.ResponseWriter) []byte {
+func (app *App) GetGameThemeList(theme string, page int, option string, rw *http.ResponseWriter) []byte {
 	(*rw).Header().Set("Content-Type", "application/json")
+	theme = url.PathEscape(theme)
 	option = toSortOption(option)
-	buf := bytes.NewBuffer([]byte(fmt.Sprintf(`%s limit %d; offset %d; %s & themes = [%d];`, dataRequired, size, size*(page-1), option, theme)))
+	buf := bytes.NewBuffer([]byte(fmt.Sprintf(`%s limit %d; offset %d; %s & themes.slug = "%s";`, dataRequired, size, size*(page-1), option, theme)))
 	req, err := http.NewRequest("POST", "https://api.igdb.com/v4/games", buf)
 	if err != nil {
 		app.LogError(err)

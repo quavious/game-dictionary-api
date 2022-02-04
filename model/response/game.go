@@ -45,7 +45,7 @@ type CoverResponse struct {
 
 type GenreResponse struct {
 	ID   *int    `json:"id"`
-	Name *string `json:"name"`
+	Name *string `json:"slug"`
 }
 
 type PlatformResponse struct {
@@ -58,7 +58,7 @@ type PlatformResponse struct {
 
 type ThemeResponse struct {
 	ID   *int    `json:"id"`
-	Name *string `json:"name"`
+	Name *string `json:"slug"`
 }
 
 type VideoResponse struct {
