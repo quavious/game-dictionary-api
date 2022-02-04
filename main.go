@@ -29,8 +29,7 @@ func (app *App) createAccessToken() {
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalln(err)
-		return
+		log.Println(err)
 	}
 	app := &App{
 		infoLog:      log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime),
